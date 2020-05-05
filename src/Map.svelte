@@ -1218,6 +1218,12 @@
       {srcSet} />
     <Overlays />
     <Attribution {attribution} {attributionPrefix} {attributionPrefixLink} />
-    <Warning />
+    <Warning
+      {state}
+      {metaWheelZoom}
+      {metaWheelZoomWarning}
+      {twoFingerDrag}
+      {twoFingerDragWarning}
+      {warningZIndex} />
   {/if}
 </div>
