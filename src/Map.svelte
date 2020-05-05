@@ -1,15 +1,15 @@
 <script>
-  import { onMount, onDestroy, afterUpdate } from "svelte";
+  import { onMount, onDestroy, afterUpdate, setContext } from "svelte";
   import { writable } from "svelte/store";
 
   import Attribution from "./Attribution.svelte";
-  import Overlays from "./Overlays.svelte";
   import Tiles from "./Tiles.svelte";
   import Warning from "./Warning.svelte";
 
   import parentPosition from "./utils/parent-position";
   import parentHasClass from "./utils/parent-has-class";
   import debounce from "./utils/debounce";
+  import { key as contextKey } from "./context";
 
   const ANIMATION_TIME = 300;
   const DIAGONAL_THROW_TIME = 1500;
@@ -106,7 +106,6 @@
   export let defaultHeight;
   export let provider;
   export let dprs = [];
-  export let children;
   export let animate = true;
   export let animateMaxScreens = 5;
   export let minZoom = 1;
@@ -162,6 +161,9 @@
   // Detect changes of center/zoom for updating
   let prevCenter;
   let prevZoom;
+
+  // Overlay
+  let overlayMapState = writable();
 
   // Component ref
   let containerElement = null;
@@ -379,11 +381,15 @@
   }
 
   function onAnimationStartFn() {
-    onAnimationStart && onAnimationStartFn();
+    if (onAnimationStart) {
+      onAnimationStart();
+    }
   }
 
   function onAnimationStopFn() {
-    onAnimationStop && onAnimationStop();
+    if (onAnimationStop) {
+      onAnimationStop();
+    }
   }
 
   function setCenterZoom(_center, _zoom, _animationEnded = false) {
@@ -1155,8 +1161,34 @@
     prevZoom = zoom;
   }
 
+  function overlayOffset(lngLat, offset) {
+    const c = latLngToPixel(lngLat);
+    return {
+      left: c[0] - (offset ? offset[0] : 0),
+      top: c[1] - (offset ? offset[1] : 0)
+    };
+  }
+
+  function updateOverlayMapState() {
+    overlayMapState.update(() => ({
+      bounds: getBounds(),
+      zoom: zoomPlusDelta(),
+      center: stateCenter,
+      width: stateWidth,
+      height: stateHeight
+    }));
+
+    setContext(contextKey, {
+      mapState: overlayMapState,
+      overlayOffset,
+      latLngToPixel,
+      pixelToLatLng
+    });
+  }
+
   $: width, height && updateState();
   $: center, zoom && updateStateViewport();
+  $: stateCenter, stateWidth, stateHeight && updateOverlayMapState();
 
   // Style checks
   let touchClass = touchEvents
@@ -1189,6 +1221,12 @@
   .mapTouchActionAuto {
     touch-action: auto;
   }
+
+  .overlays {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 </style>
 
 <!-- TODO: Have mouse/touch events optional as per props -->
@@ -1216,8 +1254,12 @@
       {imageLoaded}
       mapUrl={osm}
       {srcSet} />
-    <Overlays />
-    <Attribution {attribution} {attributionPrefix} {attributionPrefixLink} />
+    <div class="overlays">
+      <slot />
+    </div>
+    <slot name="attribution">
+      <Attribution {attribution} {attributionPrefix} {attributionPrefixLink} />
+    </slot>
     <Warning
       {state}
       {metaWheelZoom}

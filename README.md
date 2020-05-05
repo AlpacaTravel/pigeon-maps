@@ -19,12 +19,27 @@ The following tasks are in progress for an initial release.
 - warnings (done)
 - touch interaction (in progress)
 - prop callbacks
-- event listeners
+- event listeners - switch to dispatcher
 - overlays
 - markers
 - web-component example
 - lib
 - webpack deployment
+
+## Example
+
+```
+<script>
+  import Map from "./Map.svelte";
+  import Marker from "./Marker.svelte";
+</script>
+
+<main>
+  <Map center={[50.879, 4.6997]} zoom={12} width={600} height={400}>
+    <Marker anchor={[50.879, 4.6997]} />
+  </Map>
+</main>
+```
 
 ## Developing
 
