@@ -1,6 +1,7 @@
 <script>
   export let attribution;
   export let attributionPrefix;
+  export let attributionPrefixLink;
 </script>
 
 <style>
@@ -24,7 +25,14 @@
 {#if attribution}
   <div class="attribution">
     {#if attributionPrefix && attributionPrefix !== false}
-      <span>{attributionPrefix} |</span>
+      <span>
+        {#if !attributionPrefixLink}
+          {attributionPrefix}
+        {:else}
+          <a href={attributionPrefixLink} class="link">{attributionPrefix}</a>
+        {/if}
+        |
+      </span>
     {/if}
     <span>
       &copy;

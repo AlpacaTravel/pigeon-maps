@@ -117,7 +117,8 @@
   export let twoFingerDragWarning = "Use two fingers to move the map";
   export let warningZIndex = 100;
   export let attribution = true;
-  export let attributionPrefix;
+  export let attributionPrefix = "Pigeon";
+  export let attributionPrefixLink = "https://pigeon-maps.js.org/";
   export let zoomSnap = true;
   export let mouseEvents = true;
   export let touchEvents = true;
@@ -1216,7 +1217,7 @@
       mapUrl={osm}
       {srcSet} />
     <Overlays />
-    <Attribution {attribution} {attributionPrefix} />
+    <Attribution {attribution} {attributionPrefix} {attributionPrefixLink} />
     <Warning />
   {/if}
 </div>
