@@ -47,7 +47,22 @@ The following tasks are in progress for an initial release.
 
 ### Web Components
 
-Example coming..
+Anticipating this coming... (not yet ;))
+
+```html
+<html>
+  <head>
+    <!-- include out html dep, maybe ~10KB? -->
+    <script src="build/bundle.js"></script>
+  </head>
+  <body>
+
+    <pigeon-map center="50.879,4.6997" zoom="12" width="600" height="400">
+      <pigeon-marker anchor="50.879,4.6997" onclick="javascript: console.log('Called')" />
+    </pigeon->
+  </body>
+</html>
+```
 
 ## Developing
 
