@@ -56,10 +56,12 @@ Anticipating this coming... (not yet ;))
     <script src="build/bundle.js"></script>
   </head>
   <body>
-
     <pigeon-map center="50.879,4.6997" zoom="12" width="600" height="400">
-      <pigeon-marker anchor="50.879,4.6997" onclick="javascript: console.log('Called')" />
-    </pigeon->
+      <pigeon-marker
+        anchor="50.879,4.6997"
+        onclick="javascript: console.log('Called')"
+      />
+    </pigeon-map>
   </body>
 </html>
 ```
