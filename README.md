@@ -32,15 +32,15 @@ The following tasks are in progress for an initial release.
 
 ### In Svelte
 
-```html
+```
 <script>
   import Map from "./Map.svelte";
   import Marker from "./Marker.svelte";
 </script>
 
 <main>
-  <map center="{[50.879," 4.6997]} zoom="{12}" width="{600}" height="{400}">
-    <Marker anchor="{[50.879," 4.6997]} />
+  <map center={[50.879, 4.6997]} zoom={12} width={600} height={400}>
+    <Marker anchor={[50.879, 4.6997]} />
   </map>
 </main>
 ```
