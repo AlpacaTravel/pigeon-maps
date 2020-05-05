@@ -2,6 +2,7 @@
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
 
+  import { latLng } from "./utils/inputs";
   import { key as contextKey, getOverlayProps } from "./context";
 
   export let anchor;
@@ -29,7 +30,7 @@
   const context = getContext(contextKey);
   let { mapState, latLngToPixel, pixelToLatLng } = context;
   function updateOverlayProps(lngLat) {
-    ({ top, left } = getOverlayProps(context, anchor, offset));
+    ({ top, left } = getOverlayProps(context, latLng(anchor), offset));
   }
 
   function eventParameters(event) {
@@ -65,7 +66,7 @@
 
   $: hovered = typeof hover === "boolean" ? hover : $state.hover;
 
-  $: $mapState && updateOverlayProps();
+  $: anchor, $mapState && updateOverlayProps();
 </script>
 
 <style>
@@ -73,6 +74,8 @@
     position: absolute;
   }
 </style>
+
+<svelte:options tag="pigeon-marker" />
 
 <div
   class="pigeon-click-block"

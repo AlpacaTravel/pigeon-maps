@@ -10,6 +10,7 @@
   import parentHasClass from "./utils/parent-has-class";
   import debounce from "./utils/debounce";
   import { key as contextKey } from "./context";
+  import { latLng, dimension } from "./utils/inputs";
 
   const ANIMATION_TIME = 300;
   const DIAGONAL_THROW_TIME = 1500;
@@ -144,8 +145,8 @@
   let centerTarget = null;
   let zoomTarget = null;
 
-  let lastZoom = defaultZoom ? defaultZoom : zoom;
-  let lastCenter = defaultCenter ? defaultCenter : center;
+  let lastZoom = defaultZoom ? Number(defaultZoom) : Number(zoom);
+  let lastCenter = defaultCenter ? latLng(defaultCenter) : latLng(center);
   let boundsSynced = false;
   let minMaxCache = null;
 
@@ -172,8 +173,8 @@
   const state = writable({
     zoom: lastZoom,
     center: lastCenter,
-    width: width || defaultWidth,
-    height: height || defaultHeight,
+    width: dimension(width) || dimension(defaultWidth),
+    height: dimension(height) || dimension(defaultHeight),
     zoomDelta: 0,
     pixelDelta: null,
     oldTiles: [],
@@ -224,11 +225,12 @@
       const rect = containerElement.getBoundingClientRect();
 
       if (rect && rect.width > 0 && rect.height > 0) {
-        state.update(currentState => ({
-          ...currentState,
-          width: rect.width,
-          height: rect.height
-        }));
+        state.update(currentState =>
+          Object.assign({}, currentState, {
+            width: rect.width,
+            height: rect.height
+          })
+        );
         return true;
       }
     }
@@ -414,12 +416,13 @@
       });
       const oldTiles = stateOldTiles;
 
-      state.update(currentState => ({
-        ...currentState,
-        oldTiles: currentState.oldTiles
-          .filter(o => o.roundedZoom !== _tileValues.roundedZoom)
-          .concat(_tileValues)
-      }));
+      state.update(currentState =>
+        Object.assign({}, currentState, {
+          oldTiles: currentState.oldTiles
+            .filter(o => o.roundedZoom !== _tileValues.roundedZoom)
+            .concat(_tileValues)
+        })
+      );
 
       let _loadTracker = {};
 
@@ -433,11 +436,12 @@
       loadTracker = _loadTracker;
     }
 
-    state.update(currentState => ({
-      ...currentState,
-      center: limitedCenter,
-      zoom: _zoom
-    }));
+    state.update(currentState =>
+      Object.assign({}, currentState, {
+        center: limitedCenter,
+        zoom: _zoom
+      })
+    );
 
     const maybeZoom = zoom ? zoom : lastZoom;
     const maybeCenter = center ? center : lastCenter;
@@ -499,10 +503,11 @@
       ).length;
 
       if (unloadedCount === 0) {
-        state.update(currentState => ({
-          ...currentState,
-          oldTiles: []
-        }));
+        state.update(currentState =>
+          Object.assign({}, currentState, {
+            oldTiles: []
+          })
+        );
       }
     }
   }
@@ -597,13 +602,14 @@
         event.preventDefault();
         trackMoveEvents(pixel);
 
-        state.update(currentState => ({
-          ...currentState,
-          pixelDelta: [
-            pixel[0] - touchStartPixel[0][0],
-            pixel[1] - touchStartPixel[0][1]
-          ]
-        }));
+        state.update(currentState =>
+          Object.assign({}, currentState, {
+            pixelDelta: [
+              pixel[0] - touchStartPixel[0][0],
+              pixel[1] - touchStartPixel[0][1]
+            ]
+          })
+        );
       }
     } else if (event.touches.length === 2 && touchStartPixel) {
       event.preventDefault();
@@ -636,14 +642,15 @@
         (stateHeight / 2 - midPoint[1]) * (scale - 1)
       ];
 
-      state.update(currentState => ({
-        ...currentState,
-        zoomDelta,
-        pixelDelta: [
-          centerDiffDiff[0] + midPointDiff[0] * scale,
-          centerDiffDiff[1] + midPointDiff[1] * scale
-        ]
-      }));
+      state.update(currentState =>
+        Object.assign({}, currentState, {
+          zoomDelta,
+          pixelDelta: [
+            centerDiffDiff[0] + midPointDiff[0] * scale,
+            centerDiffDiff[1] + midPointDiff[1] * scale
+          ]
+        })
+      );
     }
   }
 
@@ -760,13 +767,14 @@
 
     if (mouseDown && dragStart) {
       trackMoveEvents(mousePosition);
-      state.update(currentState => ({
-        ...currentState,
-        pixelDelta: [
-          mousePosition[0] - dragStart[0],
-          mousePosition[1] - dragStart[1]
-        ]
-      }));
+      state.update(currentState =>
+        Object.assign({}, currentState, {
+          pixelDelta: [
+            mousePosition[0] - dragStart[0],
+            mousePosition[1] - dragStart[1]
+          ]
+        })
+      );
     }
   }
 
@@ -791,10 +799,11 @@
       ) {
         const latLng = pixelToLatLng(pixel);
         onClick({ event, latLng, pixel: pixel });
-        state.update(currentState => ({
-          ...currentState,
-          pixelDelta: null
-        }));
+        state.update(currentState =>
+          Object.assign({}, currentState, {
+            pixelDelta: null
+          })
+        );
       } else {
         const { center: _center, zoom: _zoom } = sendDeltaChange();
 
@@ -877,11 +886,12 @@
       setCenterZoom([lat, lng], stateZoom + stateZoomDelta);
     }
 
-    state.update(currentState => ({
-      ...currentState,
-      pixelDelta: null,
-      zoomDelta: 0
-    }));
+    state.update(currentState =>
+      Object.assign({}, currentState, {
+        pixelDelta: null,
+        zoomDelta: 0
+      })
+    );
 
     return {
       center: limitCenterAtZoom([lat, lng], stateZoom + stateZoomDelta),
@@ -890,6 +900,9 @@
   }
 
   function getBounds(_center = stateCenter, _zoom = zoomPlusDelta()) {
+    if (!_center) {
+      return { ne: null, sw: null };
+    }
     return {
       ne: pixelToLatLng([stateWidth - 1, 0], _center, _zoom),
       sw: pixelToLatLng([0, stateHeight - 1], _center, _zoom)
@@ -943,11 +956,12 @@
 
   function showWarning(warningType) {
     if (!stateShowWarning || stateWarningType !== warningType) {
-      state.update(currentState => ({
-        ...currentState,
-        showWarning: true,
-        warningType
-      }));
+      state.update(currentState =>
+        Object.assign({}, currentState, {
+          showWarning: true,
+          warningType
+        })
+      );
     }
 
     if (warningClearTimeout) {
@@ -961,10 +975,11 @@
 
   function clearWarning() {
     if (stateShowWarning) {
-      state.update(currentState => ({
-        ...currentState,
-        showWarning: false
-      }));
+      state.update(currentState =>
+        Object.assign({}, currentState, {
+          showWarning: false
+        })
+      );
     }
   }
 
@@ -1113,19 +1128,22 @@
   }
 
   function updateState(nextState) {
-    if (width !== stateWidth || height !== stateHeight) {
-      state.update(currentState => ({
-        ...currrentState,
-        width,
-        height
-      }));
+    const newWidth = dimension(width);
+    const newHeight = dimension(height);
+    if (newWidth !== stateWidth || newHeight !== stateHeight) {
+      state.update(currentState =>
+        Object.assign({}, currentState, {
+          width: newWidth,
+          height: newHeight
+        })
+      );
     }
   }
 
   function updateStateViewport() {
     if (!prevCenter || !prevZoom) {
-      prevCenter = center;
-      prevZoom = prevZoom;
+      prevCenter = latLng(center);
+      prevZoom = Number(zoom);
       return;
     }
 
@@ -1133,10 +1151,13 @@
       // if the user isn't controlling neither zoom nor center we don't have to update.
       return;
     }
+    const suppliedCenter = latLng(center);
+    const suppliedZoom = Number(zoom);
     if (
-      (!center ||
-        (center[0] === prevCenter[0] && center[1] === prevCenter[1])) &&
-      zoom === prevZoom
+      (!suppliedCenter ||
+        (suppliedCenter[0] === prevCenter[0] &&
+          suppliedCenter[1] === prevCenter[1])) &&
+      suppliedZoom === prevZoom
     ) {
       // if the user is controlling either zoom or center but nothing changed
       // we don't have to update aswell
@@ -1146,8 +1167,8 @@
     const currentCenter = isAnimating ? centerTarget : stateCenter;
     const currentZoom = isAnimating ? zoomTarget : stateZoom;
 
-    const nextCenter = center || currentCenter; // prevent the rare null errors
-    const nextZoom = zoom || currentZoom;
+    const nextCenter = suppliedCenter || currentCenter; // prevent the rare null errors
+    const nextZoom = suppliedZoom || currentZoom;
 
     if (
       Math.abs(nextZoom - currentZoom) > 0.001 ||
@@ -1157,8 +1178,8 @@
       setCenterZoomTarget(nextCenter, nextZoom, true);
     }
 
-    prevCenter = center;
-    prevZoom = zoom;
+    prevCenter = suppliedCenter;
+    prevZoom = suppliedZoom;
   }
 
   function overlayOffset(lngLat, offset) {
@@ -1238,6 +1259,8 @@
   on:touchmove={handleTouchMove}
   on:touchend={handleTouchEnd}
   on:resize={updateWidthHeight} />
+
+<svelte:options tag="pigeon-map" />
 
 <div
   bind:this={containerElement}
