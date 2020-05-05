@@ -1,5 +1,6 @@
 {
-  "name": "@alpaca-travel/svelte-pigeon-maps",
+  "name": "@alpaca-travel/pigeon-maps",
+  "description": "Pigeon Maps, without dependencies",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -18,6 +19,8 @@
   "keywords": [
     "svelte",
     "pigeon maps",
+    "vanilla js",
+    "vanillajs",
     "maps"
   ],
   "files": [

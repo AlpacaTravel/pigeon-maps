@@ -1,4 +1,4 @@
-# svelte-pigeon-maps
+# pigeon-maps
 
 A vanilla JS version of the popular ReactJS Pigeon Maps, without the ReactJS bit.
 
