@@ -15,10 +15,11 @@ The following tasks are in progress for an initial release.
 - shows a map/tiles (done)
 - wheel/zoom around (done)
 - drag pan (done)
+- attribution (e.g. osm requirements) (done)
+- warnings (done)
 - touch interaction (in progress)
 - prop callbacks
 - event listeners
-- attribution (e.g. osm requirements)
 - overlays
 - markers
 - web-component example
