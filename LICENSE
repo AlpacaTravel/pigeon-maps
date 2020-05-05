@@ -1,6 +1,10 @@
 MIT License
 
+Port across to Svelte
 Copyright (c) 2020 Alpaca Travel
+
+Original Author Marius Andra
+Copyright (c) 2016 Marius Andra <marius.andra@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
