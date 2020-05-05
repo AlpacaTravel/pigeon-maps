@@ -116,7 +116,7 @@
   export let twoFingerDrag = false;
   export let twoFingerDragWarning = "Use two fingers to move the map";
   export let warningZIndex = 100;
-  export let attribution;
+  export let attribution = true;
   export let attributionPrefix;
   export let zoomSnap = true;
   export let mouseEvents = true;
@@ -1216,7 +1216,7 @@
       mapUrl={osm}
       {srcSet} />
     <Overlays />
-    <Attribution />
+    <Attribution {attribution} {attributionPrefix} />
     <Warning />
   {/if}
 </div>
